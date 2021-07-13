@@ -1,0 +1,338 @@
+
+### https://accounts.spotify.com/authorize
+### Процесс запроса на сервер Spotify для регистрации приложения 
+### для выполнения различный действий пользователями.
+### Процедура, чтобы через ваше приложение генерировать каждому 
+### новому пользователю токены доступа.
+GET http://localhost:9999/authorize 
+    ?client_id=0bbb4ddc8b544c1393d5595175974de9
+    &response_type=code
+    &redirect_uri=http:%2F%2Flocalhost:8888%2Fcallback
+    &code_challenge_method=S256
+    &code_challenge=eyuNQHWC1feQcPBzdE1zDdBAYJa9BA494Ahi07KrmX8=
+    &code_verifier=MGWs.Sf5rDO-E~rOe.Rs5hJJIWVjZUUURFmFDxCkAFR11
+    &state=MGWs.Sf5rDO-E~rO
+    &scope=user-read-email%20user-read-private 
+
+
+### https://localhost:8888/callback
+### Accept - Проверка метода (на самом деле полmзователю должно выходить окошко 
+### и потом приложение должно сделать Redirect)
+### и если пользователь примет решение на обработку данных должен идти запрос.
+### 
+GET http://localhost:9999/callback 
+    ?client_id=0bbb4ddc8b544c1393d5595175974de9
+    &code=0253d257-3be5-44c3-9f8d-d359ff1ed276
+    &state=MGWs.Sf5rDO-E~rO 
+
+
+### Denied - пользователь отказался на обработку своих данных.
+GET http://localhost:9999/callback 
+    ?error=access_denied
+    &state=MGWs.Sf5rDO-E~rO 
+
+
+### Обмен кода(code) на токен доступа. 
+### Поле grant_type указывает что используется авторирационный код (т.е. поле code).
+POST http://localhost:9999/api/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=0bbb4ddc8b544c1393d5595175974de9
+&grant_type=authorization_code
+&code=0253d257-3be5-44c3-9f8d-d359ff1ed276
+&redirect_uri=http://localhost:8888/callback
+&code_verifier=MGWs.Sf5rDO-E~rOe.Rs5hJJIWVjZUUURFmFDxCkAFR11
+
+
+
+### Продление токена - когда время токена истечёт, 
+### то действующий токен можно будет обновить,
+### refresh_token на новый access_token. Данная процедура для метода PCKE
+### досутпна только один раз. Дальше нужно будет заново генерировать токен.
+POST http://localhost:9999/api/token/refresh HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token
+&refresh_token=$2a$10$DCiY22B09Cn/C7vgG0ldc.xWu6Eq8dEUlH09Dxym8CABYQgU7UMRy
+&client_id=0bbb4ddc8b544c1393d5595175974de9
+
+
+###==============================================================================================
+# На самом деле Spotify не предоставляет WEB API на регистрацию и вход пользователей.
+# Вместо этого посредством перенаправления приложения 
+# для уже зарегестрированным пользователям генерирует токены на
+# основе областей авторизации (scope). Так как платформа реагирует на регион и на оформленную подписку,
+# все методы WEB API выполняется c готовым токеном и параметрами scope's, а scop'ы при этом служат 
+# ограничителем действия для user'а.
+# Поэтому методы с регистрацией пользователей могут быть не точны.
+
+
+###                    Регистрация нового пользователя.
+POST http://localhost:9999/us/signup HTTP/1.1
+Content-Type: application/json
+
+{
+    "display_name": "Sardor",
+    "email": "example@gmail.com",
+    "password": "123456",
+    "product": "premium",
+    "birthdate": "2021-02-01"
+}
+
+
+
+### Вход в свою учётную запись, возвращает начальные сведения.
+### Когда входите в систему под любым создавшимся новым юзером, 
+### обращайте внимание на Access_Token.
+### Для каждого нового пользователя его нужно генерировать заново.
+@access_token = $2a$10$ERTfpl6o9H0zYyd87V5lwu9nro5qDICg5BCcwfGulDpXqIi8W4B/m
+POST http://localhost:9999/us/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "access_token": "{{access_token}}",
+    "email": "example@gmail.com",
+    "password": "123456" 
+}
+
+
+#         Авторизац.Токен - в зависимости от токена доступа его придётся менять.
+@AuthToken = Bearer $2a$10$ERTfpl6o9H0zYyd87V5lwu9nro5qDICg5BCcwfGulDpXqIi8W4B/m
+
+###  Возвращает информацию о текущем пользователе который в сеансе,
+###  по его токену. 
+GET http://localhost:9999/v1/me
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+
+### Получить публичную информацию о конкретном пользователе можно по его
+### user_id (т.е. поиск осуществляется по href, Spotify определяет их такой спец. ссылкой
+### https://api.spotify.com/v1/users/user_id, где user_id и есть тот самый что и в таблице).
+@user_id = 6169911720217b1e
+
+GET http://localhost:9999/v1/users/{{user_id}} HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+
+### Загрузить(поставить на профиль) изображения для данного пользователя,
+### который сейчас в сеансе. Фото на аватарке при создании юзера обычно, 
+### по умолчании должна быть пустой. Кол-во фото равен 1му.
+POST http://localhost:9999/v1/me/image HTTP/1.1
+Content-Type: multipart/form-data; boundary=----MyBoundary
+Authorization: {{AuthToken}}
+
+------MyBoundary
+Content-Disposition: form-data; name = "images"; filename = "1.png"
+Content-Type: image/png
+
+< ./1.png
+------MyBoundary--
+
+
+
+###            Удалить изображение из профиля для данного пользователя.
+GET http://localhost:9999/v1/me/image HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+
+
+###==================================================================================================
+### Иерархия альбомов, треков, артистов и плейлистов настолько взаимосвязано,
+### что я решил остановиться на плейлистах и самих треках.
+### Треки создавать нельзя поэтому мы можем сделать это вручную либо через запрос.
+### Для плейлистов всё иначе, можно как и создавать, удалять так и изменять имена. 
+### Также и с треками для плейлистов (их можно туда добавлять и удалять).
+###=============================================================================================
+
+### Создание плейлиста.
+### При создании плейлиста, вы создаёте его от имени того пользователя, 
+### который сейчас в сеансе. Т.е. для это нужно будет его user_id, ну и его токен 
+### который был сгенерирован для него, в ином случае произойдёт ошибка.
+
+### Названия нельзя пропускать(и желательно не испoльзовать спец. символов). 
+### Описание можно пропустить, статус по умолчанию должна стоять TRUE, а картинка 
+### при создании плейлиста обычно пустая [], но если хотите то можно заполнить её.
+### Только вот при изменении на другую картинку, нужно сначало будет удалить предыдущую.
+
+
+
+#                             1й плейлист.
+### Example:
+### "images": [{"url": "https://accounts.spotify.com/v1/images/photo.png", 
+###           "width": 120, "height": 100}]
+
+POST http://localhost:9999/v1/users/{{user_id}}/playlists HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "name": "Gopher",
+    "descriptions": "My soundtracks set!!!",
+    "is_public": true,
+    "images": []
+}
+
+
+
+###                         2й плейлист.
+POST http://localhost:9999/v1/users/{{user_id}}/playlists HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "name": "Death_Note",
+    "descriptions": "My soundtracks set. Be welcome!!!",
+    "is_public": true,
+    "images": []
+}
+
+
+
+###            Вывод всех плейлистов текущего пользователя.
+GET http://localhost:9999/v1/users/{{user_id}}/playlists HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+###
+@playlist_id1 = 951b1e288b2b269a
+###
+@playlist_id2 = 656700fe1e82a305
+
+###          Вывод 1го плейлиста для текущего пользователя.
+GET http://localhost:9999/v1/playlists/{{playlist_id1}} HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+
+
+###          Удаление всех плейлистов текущего пользователя.
+DELETE http://localhost:9999/v1/users/{{user_id}}/playlists HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+
+
+
+#===================================================================================
+### Для изменении деталей плейлиста, spotify обычно предоставляет PUT запрос.
+### Для этого потребуется playlist_id текущего пользователя.
+### Изменение имени плейлиста, описания или статуса.
+### Если какие-то поля хотите оставить без изменения, 
+### то Name и Descriptions должны быть пустыми, 
+### а Is_Public должен быть заполнен (по умолчанию TRUE) т.е поставится тот который вы отправите.
+
+# ID плейлистов - при каждом новом создании плейлиста их нужно менять.
+
+
+
+
+###                       Изменение деталей.
+PUT http://localhost:9999/v1/playlists/{{playlist_id1}} HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "name": "",
+    "descriptions": "",
+    "is_public": true   
+}
+
+
+### Запрещено загружать больше 1й фотографии.
+###               Загрузка изображения для плейлиста
+PUT http://localhost:9999/v1/playlists/{{playlist_id1}}/images HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "url": "https://accounts.spotify.com/v1/images/photo.png", 
+    "width": 120, 
+    "height": 100
+}
+
+###               Удаление изображения из плейлиста
+DELETE http://localhost:9999/v1/playlists/{{playlist_id1}}/images HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+#========================================================================================
+### Добавлять треки можно только по 1му. Для это вам также потребуется playlist_id, 
+### для какого именно плейлиста вы хотели бы добавить. Ну а юзер тот же самый.
+### Данные нужно вводить внимательно, точно такие же как и в таблице треков.
+### Поиск и выдачу треков он ориентируется на основе uri.
+
+
+
+###          Вывод 1го плейлиста для текущего пользователя.
+GET http://localhost:9999/v1/playlists/{{playlist_id1}} HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+
+###            Выводит Список Доступных Треков (track_id).        
+GET http://localhost:9999/v1/tracks HTTP/1.1
+Content-Type: application/json
+
+###
+@track_id1=83e6fbf250d0d2c5
+@track_id2=6338f40dce796997
+
+
+###                1й трек
+POST http://localhost:9999/v1/playlists/{{playlist_id1}}/tracks HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "name": "American_Idiot.mp3",
+    "artist_name": "Green_Day",
+    "uri": "spotify:track:{{track_id1}}"
+}
+###                 2й трек
+POST http://localhost:9999/v1/playlists/{{playlist_id1}}/tracks HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "name": "Boulevard_of_Broken_Dreams.mp3",
+    "artist_name": "Green_Day",
+    "uri": "spotify:track:{{track_id2}}"
+}
+
+### Удаление также происходит по 1му треку, учитывая из текущего плейлиста (id тот же самый).
+
+###                     1й трек
+PUT http://localhost:9999/v1/playlists/{{playlist_id1}}/tracks HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "uri": "spotify:track:{{track_id1}}"
+}
+
+
+###                   2й трек
+PUT http://localhost:9999/v1/playlists/{{playlist_id1}}/tracks HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+{
+    "uri": "spotify:track:{{track_id2}}"
+}
+
+
+###       Удаление всех треков из текущего плейлиста (id тот же самый).
+DELETE http://localhost:9999/v1/playlists/{{playlist_id1}}/tracks HTTP/1.1
+Content-Type: application/json
+Authorization: {{AuthToken}}
+
+

@@ -1,0 +1,79 @@
+
+
+###=========================================================================================
+### Раздел создания треков. Треки можно создавать как по 1му так и все сразу. 
+### Если собираетесь все сразу, то данные в тело отправлять нужно обязательно в [] скобках, 
+### т.к. JSON будет обрабатывать слайс, а не 1 объект.
+
+### Методы ниже, исключительно для того чтобы не проводить операции вставки и вывода вручную.
+### За исключением того, что track_id сгенерированный для каждого трека
+### придётся доставать вручную, после вывода.
+
+###                         Отрпавка трека.
+POST http://localhost:9999/v1/tracks HTTP/1.1
+Content-Type: application/json
+
+[
+    {
+        "name": "American_Idiot.mp3",
+        "artist_name": "Green_Day",
+        "album_name": "American_Idiot",
+        "track_number": 1,
+        "genres": ["rock", "punk-rock", "pop-rock"],
+        "duration": 173
+    }
+    
+]
+
+
+###                          Отрпавка треков.
+POST http://localhost:9999/v1/tracks HTTP/1.1
+Content-Type: application/json
+
+[
+    {
+        "name": "Boulevard_of_Broken_Dreams.mp3",
+        "artist_name": "Green_Day",
+        "album_name": "American_Idiot",
+        "track_number": 4,
+        "genres": ["rock", "punk-rock", "pop-rock"],
+        "duration": 259
+    },
+    {
+        "name": "Wake_Me_When_September_Ends.mp3",
+        "artist_name": "Green_Day",
+        "album_name": "American_Idiot",
+        "track_number": 11,
+        "genres": ["rock", "punk-rock", "pop-rock"],
+        "duration": 289 
+    },
+    {
+        "name": "Holiday.mp3",
+        "artist_name": "Green_Day",
+        "album_name": "American_Idiot",
+        "track_number": 3,
+        "genres": ["rock", "punk-rock", "pop-rock"],
+        "duration": 232
+    },
+    {
+        "name": "Animal_I_Have_Become.mp3",
+        "artist_name": "Three_Days_Grace",
+        "album_name": "One_X",
+        "track_number": 12,
+        "genres": ["rock", "alternative-rock", "grunge"],
+        "duration": 286
+    }
+]
+
+###               Вывод всех треков.
+GET http://localhost:9999/v1/tracks HTTP/1.1
+Content-Type: application/json
+
+
+
+###             Удаление всех треков.
+DELETE http://localhost:9999/v1/tracks HTTP/1.1
+Content-Type: application/json
+
+
+

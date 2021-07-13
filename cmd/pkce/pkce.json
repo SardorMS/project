@@ -1,0 +1,9 @@
+{
+    "ClientID": "0bbb4ddc8b544c1393d5595175974de9",
+    "ClientSecret": "775eb523365c4614aa03c36802a3cbad",
+    "CodeChallenge": "eyuNQHWC1feQcPBzdE1zDdBAYJa9BA494Ahi07KrmX8=",
+    "CodeVerifier": "MGWs.Sf5rDO-E~rOe.Rs5hJJIWVjZUUURFmFDxCkAFR",
+    "RedirectURI": "http:%2F%2Flocalhost:8888%2Fcallback",
+    "State": "MGWs.Sf5rDO-E~rO"
+}
+
