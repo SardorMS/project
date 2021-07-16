@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	MANAGER = "MANAGER"
-	ADMIN   = "ADMIN"
-)
 
 var ErrNoAuthentication = errors.New("no authentication")
 
