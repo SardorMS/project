@@ -16,7 +16,7 @@ Spotify - is backend part of the music streaming service application written on 
 
 
 #
-First thing that you should do, is install [Golang](https://golang.org/dl/) and any code editor. For example i use [VSCode](https://code.visualstudio.com/) or you can instal Goland IDE.
+First thing that you should do, is install [Golang](https://golang.org/dl/) and any code editor. For example i use [VSCode](https://code.visualstudio.com/) or you can install Goland IDE.
 
 If you have a Windows installed, need to download [docker tool-box](https://github.com/docker/toolbox/releases) for Win7 and [Docker desktop](https://www.docker.com/products/docker-desktop) for Win10 and for Mac [this](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
 If you have a Linux, please use this [guide](https://hub.docker.com/search?offering=community&operating_system=linux&q=&type=edition) for installation.
