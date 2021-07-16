@@ -67,7 +67,7 @@ $ go run cmd/main.go
 
 
 ## References
-#
+
 To get started, please read the [quick start](https://developer.spotify.com/documentation/web-api/).
 
 I'll hope that you were able to configure and run everything, and also read the manual.
@@ -75,7 +75,7 @@ I'll hope that you were able to configure and run everything, and also read the 
 Let's start :)
 
 ## Usage
-#
+
 1. Next step is a tables:
 - schema.sql  - provides necessary table for further work. Of course you can make your own changes. To add tables, you need to select each table and press Ctrl+E+E. After that, all tables will appear in the SQLTools extension itself.
 
