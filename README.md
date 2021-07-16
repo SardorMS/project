@@ -68,7 +68,7 @@ $ go run cmd/main.go
 
 ## References
 
-To get started, please read the [quick start](https://developer.spotify.com/documentation/web-api/).
+To get started, please read this [quick start](https://developer.spotify.com/documentation/web-api/).
 
 I'll hope that you were able to configure and run everything, and also read the manual.
 
