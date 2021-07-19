@@ -35,7 +35,7 @@ $ git clone https://github.com/SardorMS/project.git .
 2. If you have VScode, you will need to install additional extensions for it:
 - RestClient, SQLTools, SQLTools Postgre SQL and Docker.
 
-3. Then you will need to customize the dockep-compose.yml file by specifying your desired values in enviromets  settings and the same values will need to set in main.go file:
+3. Then you will need to customize the dockep-compose.yml file by specifying your desired values in enviroments  settings and the same values will need to set in main.go file:
 ```go
 //userlogin@host:port/db
 dsn := "postgres://app:123@localhost:5432/db"
