@@ -46,7 +46,7 @@ dsn := "postgres://app:123@localhost:5432/db"
 - Set name of connection;
 - Set Server Addres - on Win7 it's a 192.168.99.100. On Win10, Linux or Mac you can use localhost address;
 - Set database name, username and password and check test connection below. If it's ok you can create and save connection.
-All setting will be avialable in the settings.json file.
+All settings will be avialable in the settings.json file.
 
 
 5. After the connection you can start docker-compose file to run PostgreSQL Database:
