@@ -8,7 +8,7 @@ Spotify - is backend part of the music streaming service application written on 
 
 ## Features
 
-- Authentication. Users can register and sign in.
+- Authentication. Users can register and si-gn in.
 - Protected endpoints. Only signed-in users can create actions.
 - RESTful routing.
 - Middleware.
@@ -96,5 +96,3 @@ And we got a pkce.json file, which has all data we need. Then replace that data 
 Then follow the instructions below and perform the methods one by one.
 
 PDF file (on russian) for reading will be available at [here](https://drive.google.com/file/d/1K3MT1Mt5JOnjv9CqdRJ2gASAgn7AuoQl/view?usp=sharing).
-
-English version wil be soon :)
